@@ -132,6 +132,7 @@ public class ManageController {
 	public void remove(Bed bed, Allotte allotte, Transactions transact, Room room) {
 		room.deleteStayingBed(bed);
 		room.addNonStayingBed(bed);
+		room.setAvailability(Room.Status.YES);
 		hostelDB.deleteAllotteList(allotte);
 		hostelDB.deleteTransactList(transact);
 	}
@@ -148,16 +149,19 @@ public class ManageController {
 	}
 
 	public Transactions register(String roomId, String bedId, String allotteId, String allotteName, String phoneNo,
-			String address, Room eachRoom, Bed eachBed) {
+			String address, String entry,Room eachRoom, Bed eachBed) {
 
 		Allotte allotte = new Allotte(Integer.valueOf(roomId), Integer.valueOf(bedId), Integer.valueOf(allotteId),
 				allotteName, Long.valueOf(phoneNo), address);
 		hostelDB.addAllotteList(allotte);
 		eachRoom.addStayingBed(eachBed);
 		eachRoom.deleteNonStayingBed(eachBed);
+		int count = eachRoom.getNonStayingBedCount();
+		if(count <= 0){
+			eachRoom.setAvailability(Room.Status.NO);
+		}else eachRoom.setAvailability(Room.Status.YES);
 		Transactions transact = new Transactions(Integer.valueOf(roomId), Integer.valueOf(bedId),
 				Integer.valueOf(allotteId));
-		String entry = new SimpleDateFormat("EEE / dd-MMM-YYYY / hh:mm:ss aa").format(Calendar.getInstance().getTime());
 		transact.setEntryTime(entry);
 		return transact;
 	}

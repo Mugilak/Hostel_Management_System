@@ -3,7 +3,6 @@ package hostel;
 public class Bed {
 	private int bedId;
 	private String bedSize;
-	private long bedPrize;
 	
 	public Bed(int bedId, String bedSize){
 		this.bedId = bedId;

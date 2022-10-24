@@ -17,7 +17,8 @@ public class RoomManage {
 	private Room room;
 	private ManageController manage;
 	private AlotteManage alotteManage;
-	private int choice = 1, choose;
+	private int choice = 1;
+	private String choose;
 	boolean found = false;
 
 	RoomManage() {
@@ -46,32 +47,33 @@ public class RoomManage {
 						8. Remove Allotte
 						press corresponding number to do operation----
 						""");
+				input.nextLine();
 				try {
-					choose = input.nextInt();
+					choose = input.nextLine();
 					switch (choose) {
-					case 1:
+					case "1":
 						createRoomList();
 						break;
-					case 2:
+					case "2":
 						createBed();
 						break;
-					case 3:
+					case "3":
 						createRoomList();
 						createBed();
 						break;
-					case 4:
+					case "4":
 						alotteManage.Allot();
 						break;
-					case 5:
+					case "5":
 						alotteManage.viewAllotteDetails(5);
 						break;
-					case 6:
+					case "6":
 						alotteManage.viewAllotteDetails(6);
 						break;
-					case 7:
+					case "7":
 						alotteManage.viewAllotteDetails(7);
 						break;
-					case 8:
+					case "8":
 						alotteManage.deAllot();
 						break;
 					default:
@@ -81,12 +83,12 @@ public class RoomManage {
 					System.out.println("please..Press any number to continue operation");
 				}
 
-				System.out.println("press  1--> to continue the operations.   other numbers-- to exit");
+				System.out.println("\npress  1--> to continue the operations.   others -- to log out");
 				choice = input.nextInt();
 			} while (choice == 1);
 			System.out.println("Thank You");
 		} catch (NumberFormatException e) {
-			System.out.println("Press any number");
+			System.out.println("Invalid Input.. you are logged out");
 		}
 	}
 
@@ -167,10 +169,13 @@ public class RoomManage {
 						if (bedSize.equalsIgnoreCase("large") || bedSize.equalsIgnoreCase("small")) {
 							manage.addBed(room, bedId, bedSize);
 							System.out.println(i + "st Bed added\n");
-						} else
+						} else {
+							System.out.println("\n--- Invalid Bed size !  ----  continue from start ---\n");
 							continue;
+						}
 					} else {
-						System.out.println("Bed Id already exists in the room " + roomId + " ..... give again");
+						System.out.println(
+								"\n--- Bed Id already exists in the room " + roomId + " ..... give again ---\n");
 						continue;
 					}
 					i++;

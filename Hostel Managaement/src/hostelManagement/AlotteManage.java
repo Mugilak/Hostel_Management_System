@@ -100,7 +100,7 @@ public class AlotteManage {
 	}
 
 	private void registerAllotte() {
-		System.out.println("----- you can see the availability status of Room below  -----");
+		System.out.println("----- Availability status of Room are below  -----");
 		manage.viewRoomList();
 		try {
 			System.out.print("Enter Room id : ");
@@ -121,7 +121,7 @@ public class AlotteManage {
 							allotteId = input.nextLine();
 						}
 					}
-					if (manage.isAllotteAvailable(Integer.valueOf(allotteId)) != null) {
+					if (manage.isAllotteAvailable(Integer.valueOf(allotteId)) == null) {
 						System.out.print("\nEnter Alotte Name : ");
 						allotteName = input.nextLine();
 						if ((manage.isValid("^[a-zA-Z ]+$", allotteName)) == false) {
@@ -142,35 +142,31 @@ public class AlotteManage {
 						}
 						System.out.print("\nEnter Alotte Address :  ");
 						address = input.nextLine();
-						transact = manage.register(roomId, bedId, allotteId, allotteName, phoneNo, address, eachRoom,
-								eachBed);
-						System.out.println("\n" + allotteName + " with Id " + allotteId + " is Allotted in the Bed ID"
-								+ bedId + " in Room " + roomId + " on  " + entry);
+						entry = new SimpleDateFormat("EEE / dd-MMM-YYYY / hh:mm:ss aa")
+								.format(Calendar.getInstance().getTime());
+						transact = manage.register(roomId, bedId, allotteId, allotteName, phoneNo, address, entry,
+								eachRoom, eachBed);
+						System.out
+								.println("\n" + allotteName + " with Id " + allotteId + " is Allotted at the Bed ID : "
+										+ bedId + " in Room no : " + roomId + " on  " + entry);
 						System.out.println("\nAmount for 1 month is --- 3000");
-						System.out.print("\nEnter the amount you want to pay as of now ------ ");
-						paid = input.nextLine();
-						if ((manage.isValid("^[1-9][0-9]+$", paid)) == false) {
-							while ((manage.isValid("^[1-9][0-9]+$", paid)) == false) {
-								System.out.println(
-										"Invalid paid Amount!  ----  Enter paying amount again (No alphabets included)");
-								paid = input.nextLine();
+						paid = getInput();
+						while (Double.valueOf(paid) < 1500 || Double.valueOf(paid) > 3000) {
+							if (Double.valueOf(paid) < 1500) {
+								System.out.println("\nYou must pay atleast 1500 as advance.....");
+								paid = getInput();
+							} else if (Double.valueOf(paid) > 3000) {
+								System.out.println("*** Please don't give amount exceed 3000 ***");
+								paid = getInput();
 							}
 						}
-						while (Double.valueOf(paid) < 1500) {
-							System.out.println("\nYou must pay atleast 1500 as advance... enter amount to pay");
-							paid = input.nextLine();
-						}
-						if (Double.valueOf(paid) >= 1500 && Double.valueOf(paid) <= 3000) {
-							due = ((Double) (3000 - Double.valueOf(paid))).toString();
-							if (Double.valueOf(paid) == 3000) {
-								System.out.println("You paid full amount Rs." + paid);
-								manage.addTransaction(paid, due, transact);
-							} else {
-								System.out.println("You paid Rs." + paid + "  with DUE amount of Rs." + due);
-								manage.addTransaction(paid, due, transact);
-							}
+						due = ((Double) (3000 - Double.valueOf(paid))).toString();
+						if (Double.valueOf(paid) == 3000) {
+							System.out.println("You paid full amount Rs." + paid);
+							manage.addTransaction(paid, due, transact);
 						} else {
-							System.out.println("Please give amount within 3000  (Note : don't give tips amount)");
+							System.out.println("You paid Rs." + paid + "  with DUE amount of Rs." + due);
+							manage.addTransaction(paid, due, transact);
 						}
 					} else {
 						System.out.println("Allotte Id already Exists");
@@ -187,10 +183,22 @@ public class AlotteManage {
 				registerAllotte();
 			}
 		} catch (NumberFormatException e) {
-			System.out.println("Enter valid input");
+			System.out.println("Exited");
 		} catch (InputMismatchException e) {
 			System.out.println("Enter valid input");
 		}
+	}
+
+	private String getInput() {
+		System.out.print("\nEnter the amount you want to pay as of now ------ ");
+		paid = input.nextLine();
+		if ((manage.isValid("^[1-9][0-9]+$", paid)) == false) {
+			while ((manage.isValid("^[1-9][0-9]+$", paid)) == false) {
+				System.out.println("Invalid paid Amount!  ----  Enter paying amount again (No alphabets included)");
+				paid = input.nextLine();
+			}
+		}
+		return paid;
 	}
 
 	private void removeAllotte() {
@@ -216,8 +224,10 @@ public class AlotteManage {
 						+ "\n please clear it...");
 				check(due, room, bed, allotte, transact);
 			}
-		} else
+		} else {
 			System.out.println("You have entered wrong allotte Id");
+			removeAllotte();
+		}
 	}
 
 	private void viewTransaction(int allotteId) {
@@ -239,8 +249,8 @@ public class AlotteManage {
 				System.out.print("---------------------------------------\n");
 				for (int i = 0; i < month.size(); i++) {
 					Transactions.Monthly eachMonth = month.get(i);
-					System.out.printf("|%15f|", eachMonth.getPaid());
-					System.out.printf("%15f|", eachMonth.getDue());
+					System.out.printf("|%15.2f|", eachMonth.getPaid());
+					System.out.printf("%15.2f|", eachMonth.getDue());
 					System.out.printf("%19s|", eachMonth.getCurrentMonth());
 					System.out.println();
 				}
